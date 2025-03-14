@@ -7,6 +7,7 @@ audio_html = """
     let chunks = [];
     let recorder;
     let recordingTime = 5000; // 5초
+    let audioURL = '';
 
     async function startRecording() {
         let stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -24,13 +25,18 @@ audio_html = """
         recorder.stop();
         recorder.onstop = function() {
             let blob = new Blob(chunks, { type: 'audio/wav' });
-            let audioURL = URL.createObjectURL(blob);
-            document.getElementById("audio").src = audioURL;
+            audioURL = URL.createObjectURL(blob);
         };
+    }
+
+    function playAudio() {
+        document.getElementById("audio").src = audioURL;
     }
     </script>
 
     <button onclick="startRecording()">녹음 시작</button>
+    <br>
+    <button onclick="playAudio()">듣기</button>
     <br>
     <audio id="audio" controls></audio>
 """
