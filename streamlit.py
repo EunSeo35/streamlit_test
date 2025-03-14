@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import os
 import time
-import tensorflow as tf
+#import tensorflow as tf
 from tensorflow.keras.models import load_model, Model
 from tensorflow.keras.layers import Dense
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score, f1_score
@@ -45,7 +45,7 @@ english_labels = ['Motorcycle Horn', 'Motorcycle Running Sound', 'Vehicle Horn',
 unknown_label_index = label_dict['기타소음']
 
 # Eager Execution 활성화
-tf.config.run_functions_eagerly(True)
+#tf.config.run_functions_eagerly(True)
 
 # 모델 초기화 (CSV용)
 def initialize_models(model_path='../model/resnet_model_modified_v6.h5'):
@@ -392,55 +392,55 @@ def main():
 
 ##################################
 
-    # CSV 업로드 및 평가
-    st.title("소음 분류 성능 평가")
-    uploaded_csv = st.file_uploader("CSV 파일을 업로드하세요", type=["csv"])
-    if uploaded_csv is not None:
-        try:
-            df = pd.read_csv(uploaded_csv)
-            st.write("📌 **업로드된 데이터 미리보기**:")
-            st.dataframe(df.head())
+    # # CSV 업로드 및 평가
+    # st.title("소음 분류 성능 평가")
+    # uploaded_csv = st.file_uploader("CSV 파일을 업로드하세요", type=["csv"])
+    # if uploaded_csv is not None:
+    #     try:
+    #         df = pd.read_csv(uploaded_csv)
+    #         st.write("📌 **업로드된 데이터 미리보기**:")
+    #         st.dataframe(df.head())
 
-            if st.button("예측 실행"):
-                predicted_labels = predict_samples(df)
-                df['predicted_label'] = [reverse_label_dict[label] for label in predicted_labels]
+    #         if st.button("예측 실행"):
+    #             predicted_labels = predict_samples(df)
+    #             df['predicted_label'] = [reverse_label_dict[label] for label in predicted_labels]
 
-                st.write("🎯 **예측 결과**:")
-                st.write(df.head())
+    #             st.write("🎯 **예측 결과**:")
+    #             st.write(df.head())
 
-                y_true = df['ood_label'].map(label_dict).fillna(5).astype(int).values
-                y_pred = predicted_labels
+    #             y_true = df['ood_label'].map(label_dict).fillna(5).astype(int).values
+    #             y_pred = predicted_labels
 
-                report = classification_report(y_true, y_pred, target_names=english_labels, output_dict=True)
-                cm = confusion_matrix(y_true, y_pred, labels=list(label_dict.values()))
-                overall_accuracy = accuracy_score(y_true, y_pred)
+    #             report = classification_report(y_true, y_pred, target_names=english_labels, output_dict=True)
+    #             cm = confusion_matrix(y_true, y_pred, labels=list(label_dict.values()))
+    #             overall_accuracy = accuracy_score(y_true, y_pred)
 
-                st.subheader("클래스별 예측 결과")
-                metrics_df = pd.DataFrame({
-                    'Class': english_labels,
-                    'Precision': [report[label]['precision'] for label in english_labels],
-                    'Recall': [report[label]['recall'] for label in english_labels],
-                    'F1-Score': [report[label]['f1-score'] for label in english_labels],
-                    'Support': [report[label]['support'] for label in english_labels]
-                })
-                st.table(metrics_df.round(4))
-                st.write(f"Overall Accuracy: {overall_accuracy:.4f}")
+    #             st.subheader("클래스별 예측 결과")
+    #             metrics_df = pd.DataFrame({
+    #                 'Class': english_labels,
+    #                 'Precision': [report[label]['precision'] for label in english_labels],
+    #                 'Recall': [report[label]['recall'] for label in english_labels],
+    #                 'F1-Score': [report[label]['f1-score'] for label in english_labels],
+    #                 'Support': [report[label]['support'] for label in english_labels]
+    #             })
+    #             st.table(metrics_df.round(4))
+    #             st.write(f"Overall Accuracy: {overall_accuracy:.4f}")
 
-                st.subheader("Confusion Matrix")
-                plt.figure(figsize=(8, 6))
-                sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', 
-                            xticklabels=english_labels, yticklabels=english_labels)
-                plt.xlabel("Predicted")
-                plt.ylabel("Actual")
-                plt.title("Confusion Matrix")
-                st.pyplot(plt)
+    #             st.subheader("Confusion Matrix")
+    #             plt.figure(figsize=(8, 6))
+    #             sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', 
+    #                         xticklabels=english_labels, yticklabels=english_labels)
+    #             plt.xlabel("Predicted")
+    #             plt.ylabel("Actual")
+    #             plt.title("Confusion Matrix")
+    #             st.pyplot(plt)
 
-                st.write(f"최종 값: ENERGY_THRESHOLD={ENERGY_THRESHOLD:.4f}, MEAN_ENERGY_IND={MEAN_ENERGY_IND:.4f}, STD_ENERGY_IND={STD_ENERGY_IND:.4f}")
+    #             st.write(f"최종 값: ENERGY_THRESHOLD={ENERGY_THRESHOLD:.4f}, MEAN_ENERGY_IND={MEAN_ENERGY_IND:.4f}, STD_ENERGY_IND={STD_ENERGY_IND:.4f}")
 
-                csv = df.to_csv(index=False).encode('utf-8')
-                st.download_button("📥 예측 결과 다운로드", csv, "predictions.csv", "text/csv")
-        except Exception as e:
-            st.error(f"🚨 CSV 읽기 오류: {str(e)}")
+    #             csv = df.to_csv(index=False).encode('utf-8')
+    #             st.download_button("📥 예측 결과 다운로드", csv, "predictions.csv", "text/csv")
+    #     except Exception as e:
+    #         st.error(f"🚨 CSV 읽기 오류: {str(e)}")
 
 if __name__ == "__main__":
     main()
